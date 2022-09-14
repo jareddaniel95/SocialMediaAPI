@@ -2,9 +2,18 @@ const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema(
   {
-    first: String,
-    last: String,
-    age: Number,
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      match: [/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/]
+    },
     thoughts: [
       {
         type: Schema.Types.ObjectId,
@@ -25,17 +34,6 @@ const userSchema = new Schema(
     id: false,
   }
 );
-
-userSchema
-  .virtual('fullName')
-  .get(function () {
-    return `${this.first} ${this.last}`;
-  })
-  .set(function (v) {
-    const first = v.split(' ')[0];
-    const last = v.split(' ')[1];
-    this.set({ first, last });
-  });
 
 const User = model('user', userSchema);
 

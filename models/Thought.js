@@ -7,12 +7,13 @@ const thoughtSchema = new Schema(
       type: Date,
       default: Date.now,
     },
-    text: {
+    thoughtText: {
       type: String,
       required: true,
-      minLength: 1
+      minLength: 1,
+      maxLength: 280
     },
-    createdBy: {
+    username: {
       type: String,
       required: true,
     },
