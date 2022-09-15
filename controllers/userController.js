@@ -57,10 +57,10 @@ module.exports = {
     .populate(
       {
         path: 'friends',
-        // select: '-__v'
+        select: '-__v'
       }
     )
-    // .select('-__v')
+    .select('-__v')
     .then(user => {
       !user
         ? res
