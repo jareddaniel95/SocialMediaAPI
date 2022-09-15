@@ -21,9 +21,6 @@ module.exports = {
       .then((dbUserData) => res.json(dbUserData))
       .catch((err) => res.status(500).json(err));
   },
-  // updateUser(req, res) {
-  //   User.findOneAndUpdate({ _id: req.params.id})
-  // }
   updateUser(req, res) {
     User.findOneAndUpdate(
       {_id: req.params.userId},
@@ -51,4 +48,48 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
+  addFriend(req, res) {
+    User.findOneAndUpdate(
+      {_id: req.params.userId},
+      {$push: {friends: req.params.id}},
+      {new: true}
+    )
+    .populate(
+      {
+        path: 'friends',
+        // select: '-__v'
+      }
+    )
+    // .select('-__v')
+    .then(user => {
+      !user
+        ? res
+          .status(404)
+          .json({message: "No user with this id!"})
+        : res.json(user);
+    })
+    .catch((err) => res.status(500).json(err));
+  },
+  removeFriend(req, res) {
+    User.findOneAndUpdate(
+      {_id: req.params.userId},
+      {$pull: {friends: req.params.id}},
+      {new: true}
+    )
+    .populate(
+      {
+        path: 'friends',
+        select: '-__v'
+      }
+    )
+    .select('-__v')
+    .then(user => {
+      !user
+        ? res
+          .status(404)
+          .json({message: "No user with this id!"})
+        : res.json(user);
+    })
+    .catch((err) => res.status(500).json(err));
+  }
 };

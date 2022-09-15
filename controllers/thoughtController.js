@@ -1,4 +1,5 @@
 const { Thought, User } = require('../models');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
 
@@ -60,7 +61,7 @@ module.exports = {
           ? res.status(404).json({ message: 'No thought with this id!' })
           : User.findOneAndUpdate(
               { thoughts: req.params.thoughtId },
-              { $pull: { videos: req.params.thoughtId } },
+              { $pull: { thoughts: req.params.thoughtId } },
               { new: true }
             )
       )
@@ -73,4 +74,37 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
+  addReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $push: { reactions: req.body } },
+      { runValidators: true, new: true }
+    )
+      .populate(
+        {
+          path: 'reactions',
+          select: '-__v'
+        }
+      )
+      .select('-__v')
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with this id!' })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+  removeReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: req.params.reactionId } },
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with this id!' })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+  }
 };
